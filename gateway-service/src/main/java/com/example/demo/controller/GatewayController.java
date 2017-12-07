@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.model.ResponseDTO;
 
+import io.netty.util.concurrent.CompleteFuture;
+
 @RestController
 public class GatewayController {
 
@@ -41,9 +43,12 @@ public class GatewayController {
 		Object userInfo =null;
 		Object accountInfo = null;
 		try {
-			Future<Object> userDetailFuture = this.getUserDetailData(restTemplate, userId);
+			Future<Object> userDetailFuture =  CompletableFuture.supplyAsync(() -> restTemplate.getForObject("http://localhost:2222/user-management/user/"+userId, Object.class));
 			Future<Object> accountInfoFuture = this.getAccountInfoData(restTemplate, userId);
-			//some other operation can be performed here till we get the data
+			/**
+			 * some other operation can be performed here till we get the data
+			 */
+			// Get the data
 			userInfo = userDetailFuture.get();
 			accountInfo = accountInfoFuture.get();
 			System.out.println(userInfo);
