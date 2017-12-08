@@ -4,15 +4,14 @@ import java.util.logging.Logger;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.UserManagementApplication;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import com.example.demo.service.impl.UserServiceImpl;
-import com.rabbitmq.client.AMQP.Exchange;
 
 
 @RestController
@@ -20,18 +19,15 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	 private RabbitTemplate rabbitTemplate;
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
-	 private Exchange exchange;
 	
 	protected Logger logger = Logger.getLogger(UserServiceImpl.class
 			.getName());
 	
-	public UserController(UserService userService, RabbitTemplate template, Exchange exchange) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		/*this.rabbitTemplate = rabbitTemplate;
-		this.exchange = exchange;*/
-		
 	}
 	
 	@RequestMapping("/users/{id}")
@@ -42,8 +38,14 @@ public class UserController {
 	
 	@RequestMapping("/user/{userId}")
 	public User getByUserId(@PathVariable Integer userId) {
-		
-		return userService.getByUserId(userId);
+	
+		User fetchedUser = userService.getByUserId(userId);
+	  	String routingKey = "user.fetched";
+	    logger.info("Sending message for user fetched");
+	    rabbitTemplate.convertAndSend(UserManagementApplication.EXCHANGE_NAME, routingKey, "user fetched");
+	
+	return fetchedUser;
 	}
+	
 	
 }
