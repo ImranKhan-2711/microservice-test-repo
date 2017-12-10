@@ -4,8 +4,9 @@ import java.util.logging.Logger;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
-public class EventConsumer {
-	protected Logger logger = Logger.getLogger(EventConsumer.class.getName());
+public class UserEventConsumer {
+	
+	protected Logger logger = Logger.getLogger(UserEventConsumer.class.getName());
 
 	  @RabbitListener(queues="userServiceQueue")
 	  public void receive(String message) {

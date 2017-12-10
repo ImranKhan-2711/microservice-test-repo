@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,12 @@ import com.example.demo.service.TripService;
 public class TripController {
 	@Autowired
 	private TripService tripService;
+
+/*	@Value( "${exchangeName}" )*/
+	private String exchangeName = "appExchange";
+	
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 	
 	protected Logger logger = Logger.getLogger(TripController.class
 			.getName());
@@ -54,7 +62,13 @@ public class TripController {
 		trip.setDestination("3022, Sector 71");
 		trip.setName("Trip for you");
 		
-		tripService.saveTrip(trip);
+		String routingKeyUser = "trip.created.user";
+		String routingKeyDriver = "trip.created.driver";
+	    logger.info("Sending message for user fetched");
+	    rabbitTemplate.convertAndSend(exchangeName, routingKeyUser, "trip created for user");
+	    rabbitTemplate.convertAndSend(exchangeName, routingKeyDriver, "trip created for driver");
+		
+		//tripService.saveTrip(trip);
 		return trip;
 	}
 	

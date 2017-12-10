@@ -38,13 +38,7 @@ public class UserController {
 	
 	@RequestMapping("/user/{userId}")
 	public User getByUserId(@PathVariable Integer userId) {
-	
-		User fetchedUser = userService.getByUserId(userId);
-	  	String routingKey = "user.fetched";
-	    logger.info("Sending message for user fetched");
-	    rabbitTemplate.convertAndSend(UserManagementApplication.EXCHANGE_NAME, routingKey, "user fetched");
-	
-	return fetchedUser;
+		return userService.getByUserId(userId);
 	}
 	
 	

@@ -9,11 +9,11 @@ import org.springframework.amqp.core.Queue;
 
 
 @Configuration
-public class EventConsumerConfig {
+public class UserEventConsumerConfig {
 
 	public static final String EXCHANGE_NAME = "appExchange";
-	public static final String ROUTING_KEY = "user.fetched";
-	public static final String QUEUE_NAME = "userServiceQueue";
+	public static final String ROUTING_KEY_DRIVER = "trip.created.user";
+	public static final String QUEUE_NAME_DRIVER = "userServiceQueue";
 	@Bean
 	public TopicExchange appExchange() {
 		return new TopicExchange(EXCHANGE_NAME);
@@ -21,17 +21,17 @@ public class EventConsumerConfig {
 
 	  @Bean
 	  public Queue queue() {
-	    return new Queue(QUEUE_NAME);
+	    return new Queue(QUEUE_NAME_DRIVER);
 	  }
 	  
 	  @Bean
 		public Binding declareBindingGeneric() {
-			return BindingBuilder.bind(queue()).to(appExchange()).with(ROUTING_KEY);
+			return BindingBuilder.bind(queue()).to(appExchange()).with(ROUTING_KEY_DRIVER);
 		}
 
 	  @Bean
-	  public EventConsumer eventReceiver() {
-	    return new EventConsumer();
+	  public UserEventConsumer eventReceiver() {
+	    return new UserEventConsumer();
 	  }
 
 }
